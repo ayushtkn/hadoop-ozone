@@ -64,14 +64,9 @@ public class HDDSLayoutVersionManager extends
   @VisibleForTesting
   void registerUpgradeActions(String[] packageNames) {
     Reflections reflections = new Reflections(packageNames);
-    Set<Class<?>> typesAnnotatedWith;
-    // Workaround due to bug in Reflection 0.9.12
-    if (!reflections.getStore().keySet().contains(TypeAnnotationsScanner.class.getSimpleName())) {
-      typesAnnotatedWith = Collections.emptySet();
-    } else {
-      typesAnnotatedWith =
-          reflections.getTypesAnnotatedWith(UpgradeActionHdds.class);
-    }
+    Set<Class<?>> typesAnnotatedWith =
+        reflections.getTypesAnnotatedWith(UpgradeActionHdds.class);
+
 
     typesAnnotatedWith.forEach(actionClass -> {
       if (HDDSUpgradeAction.class.isAssignableFrom(actionClass)) {

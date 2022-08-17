@@ -71,7 +71,6 @@ public class ValidatorRegistry {
     Reflections reflections = new Reflections(new ConfigurationBuilder()
         .setUrls(searchUrls)
         .setScanners(new MethodAnnotationsScanner())
-        .useParallelExecutor()
     );
 
     Set<Method> describedValidators =
