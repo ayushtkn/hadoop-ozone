@@ -22,11 +22,13 @@ package org.apache.hadoop.hdds.upgrade;
 import static org.apache.hadoop.ozone.upgrade.UpgradeActionHdds.Component.SCM;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.hadoop.ozone.upgrade.AbstractLayoutVersionManager;
 import org.apache.hadoop.ozone.upgrade.UpgradeActionHdds;
 import org.reflections.Reflections;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +64,15 @@ public class HDDSLayoutVersionManager extends
   @VisibleForTesting
   void registerUpgradeActions(String[] packageNames) {
     Reflections reflections = new Reflections(packageNames);
-    Set<Class<?>> typesAnnotatedWith =
-        reflections.getTypesAnnotatedWith(UpgradeActionHdds.class);
+    Set<Class<?>> typesAnnotatedWith;
+    // Workaround due to bug in Reflection 0.9.12
+    if (!reflections.getStore().keySet().contains(TypeAnnotationsScanner.class.getSimpleName())) {
+      typesAnnotatedWith = Collections.emptySet();
+    } else {
+      typesAnnotatedWith =
+          reflections.getTypesAnnotatedWith(UpgradeActionHdds.class);
+    }
+
     typesAnnotatedWith.forEach(actionClass -> {
       if (HDDSUpgradeAction.class.isAssignableFrom(actionClass)) {
         try {
