@@ -19,6 +19,7 @@ env:
   FAIL_FAST: ${{ github.event_name == 'pull_request' }}
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   OZONE_WITH_COVERAGE: ${{ github.repository == 'apache/ozone' && github.event_name != 'pull_request' }}
+
 jobs:
   build-info:
     runs-on: ubuntu-20.04
@@ -45,6 +46,10 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
         if: github.event_name  == 'pull_request'
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Selective checks
         id: selective-checks
         env:
@@ -95,6 +100,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Run a full build
         run: hadoop-ozone/dev-support/checks/build.sh -Pdist -Psrc
       - name: Store binaries for tests
@@ -149,6 +158,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Compile Ozone using Java ${{ matrix.java }}
         run: hadoop-ozone/dev-support/checks/build.sh -Dskip.npx -Dskip.installnpx -Djavac.version=${{ matrix.java }}
         env:
@@ -194,6 +207,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Execute tests
         run: hadoop-ozone/dev-support/checks/${{ matrix.check }}.sh
       - name: Summary of failures
@@ -230,6 +247,10 @@ jobs:
         run: |
           mkdir dist
           tar  -C dist --strip-components 1 -xzf ozone*.tar.gz
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Execute tests
         run: |
           export OZONE_DIST_DIR=`pwd`/dist
@@ -272,6 +293,10 @@ jobs:
           mkdir -p hadoop-ozone/dist/target
           tar xzvf ozone*.tar.gz -C hadoop-ozone/dist/target
           sudo chmod -R a+rwX hadoop-ozone/dist/target
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Execute tests
         run: |
           pushd hadoop-ozone/dist/target/ozone-*
@@ -307,6 +332,10 @@ jobs:
         run: |
           mkdir -p hadoop-ozone/dist/target
           tar xzvf ozone*.tar.gz -C hadoop-ozone/dist/target
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Execute tests
         run: |
           pushd hadoop-ozone/dist/target/ozone-*
@@ -354,6 +383,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Execute tests
         run: hadoop-ozone/dev-support/checks/integration.sh -P${{ matrix.profile }}
         if: matrix.profile != 'flaky'
@@ -404,6 +437,10 @@ jobs:
         run: |
           mkdir -p hadoop-ozone/dist/target
           tar xzvf target/artifacts/ozone-bin/ozone*.tar.gz -C hadoop-ozone/dist/target
+      - name: Setup Apache Snapshots Repo
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: Calculate combined coverage
         run: ./hadoop-ozone/dev-support/checks/coverage.sh
       - name: Setup java 11
