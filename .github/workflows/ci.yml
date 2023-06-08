@@ -34,6 +34,9 @@ jobs:
       needs-integration-tests: ${{ steps.selective-checks.outputs.needs-integration-tests }}
       needs-kubernetes-tests: ${{ steps.selective-checks.outputs.needs-kubernetes-tests }}
     steps:
+      - uses: s4u/maven-settings-action@v2.8.0
+        with:
+          mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
         uses: actions/checkout@v3
         with:
