@@ -19,6 +19,11 @@ env:
   FAIL_FAST: ${{ github.event_name == 'pull_request' }}
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   OZONE_WITH_COVERAGE: ${{ github.repository == 'apache/ozone' && github.event_name != 'pull_request' }}
+steps:
+- uses: s4u/maven-settings-action@v2.8.0
+  with:
+    mirrors: '[{"id": "apache.snapshots", "name": "ASF Snapshot Repo", "mirrorOf": "apache.snapshots", "url": "https://repository.apache.org/snapshots/"}]'
+
 jobs:
   build-info:
     runs-on: ubuntu-20.04
